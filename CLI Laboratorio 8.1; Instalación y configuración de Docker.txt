@@ -1,0 +1,157 @@
+Comandos utilizados, práctica laboratorio 8.1:
+Cloud Computing y Contenerización.
+
+Instalación y configuración de Docker.
+
+============================================
+
+# Documentación oficial:
+https://docs.docker.com/engine/install/rhel/
+
+------------------------------------------------------------
+
+# DESINSTALAR VERSIONES ANTERIORES
+
+sudo dnf remove docker \
+docker-client \
+docker-client-latest \
+docker-common \
+docker-latest \
+docker-latest-logrotate \
+docker-logrotate \
+docker-engine \
+podman \
+runc
+
+------------------------------------------------------------
+
+# INSTALAR DOCKER DESDE REPOSITORIO
+
+sudo dnf -y install dnf-plugins-core
+
+sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+
+------------------------------------------------------------
+
+# INICIAR Y HABILITAR DOCKER
+
+sudo systemctl enable --now docker
+
+# Verificar estado
+
+sudo systemctl status docker
+
+------------------------------------------------------------
+
+# PROBAR INSTALACIÓN
+
+sudo docker run hello-world
+
+docker --version
+
+------------------------------------------------------------
+
+# BUSCAR Y DESCARGAR IMAGEN NGINX
+
+docker search nginx
+
+docker pull nginx
+
+------------------------------------------------------------
+
+# VER IMÁGENES DESCARGADAS
+
+sudo docker images
+
+------------------------------------------------------------
+
+# CREAR DIRECTORIO PARA EL WEBSITE
+
+sudo mkdir -p /home/website
+
+cd /home/website/
+
+------------------------------------------------------------
+
+# CREAR ARCHIVO HTML
+
+nano index.html
+
+# CONTENIDO:
+
+<html>
+ <head>
+  <title>DOCKER x NGINX</title>
+ </head>
+ <body>
+  <h3>Lis (Tu nombre)<br>
+  Matrícula: TU_MATRICULA</h3>
+ </body>
+</html>
+
+------------------------------------------------------------
+
+# EJECUTAR CONTENEDOR NGINX
+
+sudo docker run -d -p 8888:80 -v /home/website:/usr/share/nginx/html nginx
+
+------------------------------------------------------------
+
+# VER CONTENEDORES
+
+sudo docker ps -a
+
+------------------------------------------------------------
+
+# PRUEBA EN NAVEGADOR
+
+# Desde la misma máquina:
+127.0.0.1:8888
+
+# Si es desde otra máquina:
+http://192.168.100.17:8888
+
+------------------------------------------------------------
+
+# RESULTADO ESPERADO
+
+# Debe mostrar:
+# - Tu nombre
+# - Tu matrícula
+# desde el navegador
+
+------------------------------------------------------------
+
+# COMANDOS CLAVE
+
+docker run hello-world
+docker pull nginx
+docker images
+docker ps -a
+
+------------------------------------------------------------
+
+# NOTAS IMPORTANTES
+
+# - Puerto 8888 (host) → puerto 80 (contenedor)
+# - La carpeta /home/website está montada en nginx
+# - index.html es lo que se muestra en el navegador
+
+------------------------------------------------------------
+
+# ERRORES COMUNES
+
+# No abre en navegador:
+sudo systemctl status docker
+
+# Verificar contenedor:
+sudo docker ps
+
+# Ver puerto:
+ss -tuln | grep 8888
+
+# Problema de firewall:
+sudo firewall-cmd --add-port=8888/tcp --permanent
+sudo firewall-cmd --reload
