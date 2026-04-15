@@ -1,0 +1,168 @@
+Comandos utilizados, práctica laboratorio 8.2:
+Cloud Computing y Contenerización.
+
+Instalación de Portainer.
+
+============================================
+
+# Documentación oficial:
+https://docs.portainer.io/start/install-ce/server/docker/linux
+
+------------------------------------------------------------
+
+# CREAR VOLUMEN PARA PORTAINER
+
+sudo docker volume create portainer_data
+
+------------------------------------------------------------
+
+# INSTALAR Y EJECUTAR PORTAINER
+
+sudo docker run -d -p 9443:9443 \
+--name portainer \
+--restart=always \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v portainer_data:/data \
+portainer/portainer-ce:lts
+
+------------------------------------------------------------
+
+# VERIFICAR CONTENEDOR
+
+sudo docker ps -a
+
+------------------------------------------------------------
+
+# ACCESO DESDE EL NAVEGADOR
+
+# Desde la misma máquina:
+https://127.0.0.1:9443
+
+# Desde otra máquina (tu red):
+https://192.168.100.17:9443
+
+# NOTA:
+# Aceptar advertencia de certificado (es normal)
+
+------------------------------------------------------------
+
+# CONFIGURACIÓN INICIAL EN PORTAINER
+
+# Crear usuario administrador (username + password)
+
+------------------------------------------------------------
+
+# AGREGAR ENTORNO DOCKER
+
+Add Environments  
+Docker Standalone  
+Start Wizard
+
+------------------------------------------------------------
+
+# OPCIÓN 1 (MÁS FÁCIL – RECOMENDADA)
+
+# Seleccionar:
+Local
+
+# Luego:
+Connect
+
+------------------------------------------------------------
+
+# OPCIÓN 2 (USANDO AGENTE - SOLO SI LO PIDEN)
+
+# Copiar el comando que da Portainer
+
+# Ejemplo (puede variar):
+
+sudo docker run -d -p 9001:9001 \
+--name portainer_agent \
+--restart=always \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v /var/lib/docker/volumes:/var/lib/docker/volumes \
+portainer/agent
+
+------------------------------------------------------------
+
+# Luego en Portainer:
+
+Name: MiServidor
+Environment address:
+192.168.100.17:9001
+
+Click:
+Connect
+
+------------------------------------------------------------
+
+# USO DE PORTAINER
+
+# Entrar a:
+Environment creado
+
+# Ir a:
+Containers
+
+------------------------------------------------------------
+
+# DETENER CONTENEDOR NGINX
+
+# Seleccionar contenedor nginx
+
+Click:
+Stop
+
+------------------------------------------------------------
+
+# VERIFICACIÓN
+
+# En terminal:
+
+sudo docker ps -a
+
+# Debe aparecer nginx como:
+Exited
+
+------------------------------------------------------------
+
+# RESULTADO ESPERADO
+
+# - Portainer funcionando en puerto 9443
+# - Acceso web correcto
+# - Contenedores visibles
+# - Nginx detenido desde interfaz gráfica
+
+------------------------------------------------------------
+
+# COMANDOS CLAVE
+
+docker ps -a
+docker volume create
+docker run
+
+------------------------------------------------------------
+
+# NOTAS IMPORTANTES
+
+# - Portainer usa HTTPS (9443)
+# - Puede mostrar advertencia de seguridad (normal)
+# - Se puede usar sin agente (Local)
+# - El agente usa el puerto 9001
+
+------------------------------------------------------------
+
+# ERRORES COMUNES
+
+# No abre en navegador:
+ss -tuln | grep 9443
+
+# Verificar contenedor:
+sudo docker ps
+
+# Problema firewall:
+sudo firewall-cmd --add-port=9443/tcp --permanent
+sudo firewall-cmd --reload
+
+# Si usas agente:
+verificar puerto 9001
