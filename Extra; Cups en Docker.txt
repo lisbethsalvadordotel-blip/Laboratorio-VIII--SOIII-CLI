@@ -1,0 +1,120 @@
+Extra: CUPS en Docker
+
+================================
+
+# NOTA:
+# Este laboratorio requiere que Docker esté instalado previamente
+
+------------------------------------------------------------
+
+# INSTALAR DOCKER (SI NO LO TIENES)
+
+sudo dnf -y install dnf-plugins-core
+
+sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+
+sudo systemctl enable --now docker
+
+------------------------------------------------------------
+
+# VERIFICAR DOCKER
+
+sudo systemctl status docker
+
+docker --version
+
+------------------------------------------------------------
+
+# BUSCAR IMÁGENES DE CUPS
+
+docker search cups
+
+------------------------------------------------------------
+
+# DESCARGAR IMAGEN CUPS
+
+docker pull olbat/cupsd
+
+------------------------------------------------------------
+
+# CREAR DIRECTORIO PARA CONFIGURACIÓN
+
+sudo mkdir -p /home/cups-config
+
+------------------------------------------------------------
+
+# EJECUTAR CONTENEDOR CUPS
+
+sudo docker run -d \
+  --name cups-server \
+  -p 631:631 \
+  -v /home/cups-config:/etc/cups \
+  --restart unless-stopped \
+  olbat/cupsd
+
+------------------------------------------------------------
+
+# VERIFICAR CONTENEDOR
+
+sudo docker ps
+
+------------------------------------------------------------
+
+# VERIFICAR PUERTO
+
+ss -tuln | grep 631
+
+------------------------------------------------------------
+
+# ACCESO DESDE NAVEGADOR
+
+# Desde la misma máquina:
+http://127.0.0.1:631
+
+# Desde otra máquina:
+http://192.168.100.17:631
+
+------------------------------------------------------------
+
+# RESULTADO ESPERADO
+
+# - Se abre la interfaz web de CUPS
+# - Permite administrar impresoras
+# - Contenedor funcionando correctamente
+
+------------------------------------------------------------
+
+# COMANDOS CLAVE
+
+docker pull olbat/cupsd
+docker run
+docker ps
+
+------------------------------------------------------------
+
+# NOTAS IMPORTANTES
+
+# - Puerto 631 → interfaz web de CUPS
+# - Se usa volumen para persistencia de configuración
+# - Puede pedir autenticación en la interfaz
+
+------------------------------------------------------------
+
+# ERRORES COMUNES
+
+# No abre en navegador:
+sudo docker ps
+
+# Ver puerto:
+ss -tuln | grep 631
+
+# Firewall bloqueando:
+sudo firewall-cmd --add-port=631/tcp --permanent
+sudo firewall-cmd --reload
+
+# Ver logs:
+sudo docker logs cups-server
+
+------------------------------------------------------------
