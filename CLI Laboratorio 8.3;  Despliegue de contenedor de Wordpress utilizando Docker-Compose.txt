@@ -1,0 +1,141 @@
+Comandos utilizados, práctica laboratorio 8.3:
+Cloud Computing y Contenerización.
+
+Despliegue de contenedor de Wordpress utilizando Docker-Compose.
+
+============================================
+
+# INSTALAR DOCKER COMPOSE (VERSIÓN MANUAL)
+
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+docker-compose version
+
+------------------------------------------------------------
+
+# CREAR DIRECTORIO DEL PROYECTO
+
+mkdir ~/wordpress-compose
+
+cd ~/wordpress-compose
+
+------------------------------------------------------------
+
+# CREAR ARCHIVO docker-compose.yml
+
+nano docker-compose.yml
+
+------------------------------------------------------------
+
+# CONTENIDO:
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: wordpress_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress_app
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_pass
+    depends_on:
+      - db
+    volumes:
+      - wp_data:/var/www/html
+
+volumes:
+  db_data:
+  wp_data:
+
+------------------------------------------------------------
+
+# DESPLEGAR CONTENEDORES
+
+sudo docker compose up -d
+
+------------------------------------------------------------
+
+# VERIFICAR CONTENEDORES
+
+sudo docker ps
+
+------------------------------------------------------------
+
+# VERIFICAR RED DOCKER (opcional)
+
+sudo docker network ls
+
+------------------------------------------------------------
+
+# ACCESO DESDE NAVEGADOR
+
+# En la misma máquina:
+http://localhost:8888
+
+# Desde otra máquina (tu red):
+http://192.168.100.17:8888
+
+------------------------------------------------------------
+
+# RESULTADO ESPERADO
+
+# - Se abre el instalador de WordPress
+# - Configurar:
+#   - Título del sitio
+#   - Usuario administrador
+#   - Contraseña
+#   - Correo
+
+------------------------------------------------------------
+
+# COMANDOS CLAVE
+
+docker compose up -d
+docker ps
+docker-compose version
+
+------------------------------------------------------------
+
+# NOTAS IMPORTANTES
+
+# - MySQL corre en contenedor db
+# - WordPress corre en contenedor wordpress
+# - Ambos se comunican internamente por Docker
+# - Puerto 8888 expone WordPress al navegador
+
+------------------------------------------------------------
+
+# ERRORES COMUNES
+
+# No abre en navegador:
+sudo docker ps
+
+# Verificar puerto:
+ss -tuln | grep 8888
+
+# Problema firewall:
+sudo firewall-cmd --add-port=8888/tcp --permanent
+sudo firewall-cmd --reload
+
+# Ver logs:
+sudo docker logs wordpress_app
+
+# Parar contenedores:
+sudo docker compose down
